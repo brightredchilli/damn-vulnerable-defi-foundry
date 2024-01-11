@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
+import "forge-std/Test.sol";
 
 import {Address} from "openzeppelin-contracts/utils/Address.sol";
 
@@ -36,6 +37,7 @@ contract SideEntranceLenderPool {
         IFlashLoanEtherReceiver(msg.sender).execute{value: amount}();
 
         if (address(this).balance < balanceBefore) {
+          console.log("here");
             revert FlashLoanHasNotBeenPaidBack();
         }
     }

@@ -1,64 +1,27 @@
 # Damn Vulnerable DeFi - Foundry Version ⚒️
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/nicolasgarcia214/damn-vulnerable-defi-foundry)
+A fork of https://github.com/nicolasgarcia214/damn-vulnerable-defi-foundry
 
-![Github Actions][gha-badge] [![Telegram Support][tg-support-badge]][tg-support-url]
 
-[gha-badge]: https://img.shields.io/github/workflow/status/nicolasgarcia214/damn-vulnerable-defi-foundry/CI
-[tg-support-badge]: https://img.shields.io/endpoint?color=neon&logo=telegram&label=support&style=flat-square&url=https%3A%2F%2Ftg.sumanjay.workers.dev%2Ffoundry_support
-[tg-support-url]: https://t.me/foundry_support
+## Level 1 : Unstoppable
 
-[![Twitter Follow](https://img.shields.io/twitter/follow/ngp2311?label=Follow%20me%20%40ngp2311&style=social)](https://twitter.com/ngp2311)
+UnstoppableLender assumes that poolBalance is held in sync with the balance of its address in the ERC20 token, and 
+reverts the transaction if this guard is not met. To break the contract, attacker transfers tokens to the lender 
+contract outside of the depositTokens method.
 
-Visit [damnvulnerabledefi.xyz](https://damnvulnerabledefi.xyz)
+## Level 2 : NaiveReceiver
 
-### Acknowledgement
-*Big thanks to [Tincho](https://twitter.com/tinchoabbate) who created the [first version of this game](https://github.com/tinchoabbate/damn-vulnerable-defi/tree/v2.0.0) and to all the fellows behind the [Foundry Framework](https://github.com/gakonst/foundry/graphs/contributors)*
+NaiveReceiver doesn't check that the borrower is not the message sender, and therefore the attacker can borrow on the 
+victim contract's behalf, draining the contract balance.
 
-Damn Vulnerable DeFi is the wargame to learn offensive security of DeFi smart contracts.
 
-Throughout numerous challenges you will build the skills to become a bug hunter or security auditor in the space. 🕵️‍♂️
+## Level 3 : Truster
 
-## How To Play 🕹️
+The suspcicious line in this contract is the functionCall in TrusterLenderPool. Since the target address can be 
+specified, a malicious actor can act in the capacity of the borrowing contract. This can then be used to approve the 
+transfer of ERC20 tokens to a target account, which is the exploit that drains the pool.
 
-1.  **Install Foundry**
+## Level 4 : Side Entrance
 
-First run the command below to get foundryup, the Foundry toolchain installer:
-
-``` bash
-curl -L https://foundry.paradigm.xyz | bash
-```
-
-Then, in a new terminal session or after reloading your PATH, run it to get the latest forge and cast binaries:
-
-``` console
-foundryup
-```
-
-2. **Clone This Repo and install dependencies**
-``` 
-git clone https://github.com/nicolasgarcia214/damn-vulnerable-defi-foundry.git
-cd damn-vulnerable-defi-foundry
-forge install
-```
-3. **Code your solutions in the provided `[NAME_OF_THE_LEVEL].t.sol` files (inside each level's folder in the test folder)**
-4. **Run your exploit for a challenge**
-```
-make [CONTRACT_LEVEL_NAME]
-```
-or
-```
-./run.sh [LEVEL_FOLDER_NAME]
-./run.sh [CHALLENGE_NUMBER]
-./run.sh [4_FIRST_LETTER_OF_NAME] 
-```
-If the challenge is executed successfully, you've passed!🙌🙌
-
-### Tips and tricks ✨
-- In all challenges you must use the account called attacker. In Forge, you can use the [cheat code](https://github.com/gakonst/foundry/tree/master/forge#cheat-codes) `prank` or `startPrank`.
-- To code the solutions, you may need to refer to the [Foundry Book](https://book.getfoundry.sh/).
-- In some cases, you may need to code and deploy custom smart contracts.
-
-### Preinstalled dependencies
-
-`ds-test` for testing, `forge-std` for better cheatcode UX, and `openzeppelin-contracts` for contract implementations.
+This exploit is reminiscent of The UnstoppableLender contract, where there is a discrepancy between an internal 
+'balances' variable and the remaining ether in an account.

