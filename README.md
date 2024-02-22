@@ -25,3 +25,24 @@ transfer of ERC20 tokens to a target account, which is the exploit that drains t
 
 This exploit is reminiscent of The UnstoppableLender contract, where there is a discrepancy between an internal 
 'balances' variable and the remaining ether in an account.
+
+## Level 5 : Rewarder
+
+This seems more like a 'legal' exploit, leveraging a flashloan to gain get a considerable number of rewards.
+
+## Level 6 : Selfie
+
+Another flashloan like hack, but with a level of indirection. The pool is restricted by actions only by the governance 
+contract. A flashloan allows the attacker to get enough governance tokens to control the pool.
+
+## Level 7 : Compromised
+
+Not immediately clear how to backtrack keys from the web response, but eventually used some python to extract a private 
+key looking string, and using python utils, converted that to an appropriatte uint256 format.
+
+The exploit then involved resetting the price of a token using the trusted oracles, buying, then reselling again after 
+resetting the price.
+
+
+
+

