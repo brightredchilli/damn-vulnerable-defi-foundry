@@ -44,5 +44,14 @@ The exploit then involved resetting the price of a token using the trusted oracl
 resetting the price.
 
 
+## Level 8 : Puppet
+
+The crux of this vulnerability is that the 'Oracle' source for a smart contract becomes an unguarded, ignored dependency 
+- in this case, the old UniswapV1 endpoint which people seems to have forgotten. Crypto projects expect efficient 
+markets, and in this case this was not the case. By manipulating the price of the dependency, the main project was 
+compomised to yield an unusually low lending rate - in this case, from 1e23 DVT = 2e23 wei to 1e23 DVT = 1.9e19 wei. The 
+swap was at 100 DVT = 9.9e1 wei before, and after depositing DVT into the swap, 100 DVT = 0e0 wei.
+
+
 
 
