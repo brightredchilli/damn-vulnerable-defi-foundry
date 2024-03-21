@@ -54,4 +54,9 @@ swap was at 100 DVT = 9.9e1 wei before, and after depositing DVT into the swap, 
 
 
 
+## Level 9 : PuppetV2
+
+This exploit is similar to the previous one, in this case manipulating a Uniswap Pair's reserve ratio to then allow a 
+favorable borrowing rate. The attacker swaps his available DVT for WETH, putting more DVT into the Swap Pair, diluting 
+DVT. In return, attacker gets even more WETH that they can use to borrow.
 
