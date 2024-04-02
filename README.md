@@ -73,3 +73,10 @@ sense is for the white hat to supply an address that can receive payout - but pe
 you are really getting hacked.
 
 
+## Level 11 : Backdoor
+
+This contract exploits the fact that while the GnosisSafe libraries are hardened, one has to always check the modules
+that are initiated with the wallet. These modules allow arbitary code to run as the wallet, undermining any security
+checks that are done on the contract.
+
+
